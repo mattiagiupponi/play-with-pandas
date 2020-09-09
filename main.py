@@ -1,20 +1,19 @@
-from sqlite_db import create_connection
+from sqlite_db import DbHook
 import pandas as pd
-import numpy as np
 
-create_connection()
+db_connection = DbHook().get_connection()
 
-live_advert = pd.DataFrame(
-    {
-        "country": ["za", "ao", "uk", "de", "uk", "uk"],
-        "population": [np.nan, 100, 1000, 300, np.nan, 10],
-        "continent": ["africa", "africa", "europe", "europe", "europe", "europe"],
-    }
-)
+countries = pd.read_sql_query("select name,continent,population from country", db_connection)
 
-#  print(live_advert)
-#  print(live_advert.groupby("continent").sum())
-#  print(live_advert.sort_values(by="country", ascending=False))
-
-print(live_advert.groupby(["country", "continent"]).sum())
+print("QUERY AS DATAFRAME")
+print(countries)
+print("######")
+print("SUM OF POPULATION BY CONTINENT")
+print(countries.groupby("continent").sum())
+print("######")
+print("ORDER BY COUNTRY NAME DESC")
+print(countries.sort_values(by="name", ascending=False))
+print("######")
+print("SUM OF POPULATION BY COUNTRY NAME AND CONTINENT")
+print(countries.groupby(["name", "continent"]).sum())
 
